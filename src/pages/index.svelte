@@ -96,7 +96,7 @@
     }
 </style>
 
-<main class="home">
+<main class="home m-0">
     <div class="flex relative w-full h-full overflow-hidden">
         <svg class="absolute h-full md:h-auto w-auto md:w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320">
             <defs>
