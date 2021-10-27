@@ -4,6 +4,12 @@ const path = require('path');
 
 const mode = process.env.NODE_ENV || 'development';
 const prod = mode === 'production';
+const fileLoaderRule = {
+	test: /\.(png|jpe?g|gif)$/i,
+	use: [
+		'file-loader',
+	]
+};
 
 module.exports = {
 	entry: {
@@ -52,6 +58,7 @@ module.exports = {
 					'css-loader',
 				],
 			},
+            fileLoaderRule
 		],
 	},
 	mode,
