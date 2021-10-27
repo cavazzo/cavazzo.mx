@@ -147,8 +147,5 @@
             </div>
             <div id="skills-chart" class="flex items-center justify-center w-full md:w-1/2 lg:w-1/2 h-full md:h-full"></div>
         </div>
-        <div class="flex w-full">
-            
-        </div>
     </div>
 </main>
