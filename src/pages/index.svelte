@@ -338,7 +338,7 @@
         <div class="flex flex-row justify-center relative w-full md:w-10/12 mx-auto mt-5 md:mt-10">
             <div class="flex absolute w-full h-10 -top-3 bg-transparent z-10 border-0 backdrop-filter backdrop-blur-sm"></div>
             <div class="flex absolute w-full h-full" style="background: rgb(255,255,255); background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(209,250,229,1) 30%, rgba(237,233,254,1) 70%, rgba(255,255,255,0) 100%);"></div>
-            <div class="flex flex-col justify-center items-center w-full h-full py-8 z-10">
+            <div class="flex flex-col justify-center items-center w-full h-full space-y-8 py-8 z-10">
                 <div class="flex flex-col text-center items-center justify-center">
                     <div class="text-2xl font-bold">
                         Skills
