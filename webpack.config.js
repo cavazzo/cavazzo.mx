@@ -1,5 +1,6 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 const path = require('path');
 const { node } = require('webpack');
 
@@ -103,7 +104,12 @@ module.exports = {
 		}),
         new HtmlWebpackPlugin({
             template: 'public/index.html'
-        })
+        }),
+		new CopyPlugin({
+			patterns: [
+				{ from: "./public/images", to: "./images" }
+			]
+		})
 	],
 	devtool: prod ? false : 'source-map',
 	devServer: {
