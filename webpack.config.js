@@ -1,6 +1,7 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
+const { node } = require('webpack');
 
 const mode = process.env.NODE_ENV || 'development';
 const prod = mode === 'production';
@@ -20,7 +21,7 @@ module.exports = {
 			svelte: path.resolve('node_modules', 'svelte'),
 		},
 		extensions: ['.mjs', '.js', '.svelte'],
-		mainFields: ['svelte', 'browser', 'module', 'main'],
+		mainFields: ['svelte', 'browser', 'module', 'main']
 	},
 	output: {
 		path: __dirname + '/dist',
@@ -45,10 +46,44 @@ module.exports = {
 				use: {
 					loader: 'svelte-loader',
 					options: {
-						dev: !prod,
-						emitCss: true,
-						hotReload: !prod,
-					},
+						compilerOptions: {
+							// NOTE Svelte's dev mode MUST be enabled for HMR to work
+							dev: !prod, // Default: false
+						},
+						// NOTE emitCss: true is currently not supported with HMR
+						// Enable it for production to output separate css file
+						emitCss: prod, // Default: false
+						// Enable HMR only for dev mode
+						hotReload: !prod, // Default: false
+						// Extra HMR options, the defaults are completely fine
+						// You can safely omit hotOptions altogether
+						hotOptions: {
+							// Prevent preserving local component state
+							preserveLocalState: false,
+
+							// If this string appears anywhere in your component's code, then local
+							// state won't be preserved, even when noPreserveState is false
+							noPreserveStateKey: '@!hmr',
+
+							// Prevent doing a full reload on next HMR update after fatal error
+							noReload: false,
+
+							// Try to recover after runtime errors in component init
+							optimistic: false,
+
+							// --- Advanced ---
+
+							// Prevent adding an HMR accept handler to components with
+							// accessors option to true, or to components with named exports
+							// (from <script context="module">). This have the effect of
+							// recreating the consumer of those components, instead of the
+							// component themselves, on HMR updates. This might be needed to
+							// reflect changes to accessors / named exports in the parents,
+							// depending on how you use them.
+							acceptAccessors: true,
+							acceptNamedExports: true
+						}
+					}
 				},
 			},
 			{
@@ -72,7 +107,7 @@ module.exports = {
 	],
 	devtool: prod ? false : 'source-map',
 	devServer: {
-		contentBase: ['./public', './public/'],
+		static: ['./public', './public/'],
 		port: 4200,
 		historyApiFallback: true,
 	},
