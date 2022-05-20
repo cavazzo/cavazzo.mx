@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { library } from '@fortawesome/fontawesome-svg-core';
-    import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+    import { faEnvelope, faSpinner } from '@fortawesome/free-solid-svg-icons';
     import { faLinkedin, faGithub } from '@fortawesome/free-brands-svg-icons';
     import { FontAwesomeIcon } from 'fontawesome-svelte';
     import { goto, metatags } from "@roxi/routify";
@@ -9,7 +9,7 @@
     import avatar from "../assets/img/avatar.jpg";
 
     metatags.title = "Cavazzo";
-    library.add(faEnvelope, faLinkedin, faGithub);
+    library.add(faEnvelope, faSpinner, faLinkedin, faGithub);
 
     const Skills = [
         {
@@ -137,6 +137,11 @@
     let updateRate = 10;
     let mouse = {};
     let projectInfo;
+    let name = "";
+    let email = "";
+    let subjects = [];
+    let message = "";
+    let sendingMessage = false;
 
     onMount(() => {
         const projectWrapper = document.getElementById("project-wrapper");
@@ -178,9 +183,10 @@
 
             entries.forEach(entry => {
                 if (!entry.isIntersecting) {
-                    console.log("out", entry.target.dataset.itemSection);
+                    // out
                 }
                 else {
+                    // in
                     cleanMenuActives();
                     const section = entry.target.dataset.itemSection;
                     const buttonDesktop = desktopNav.querySelector(`button[data-section='${section}']`);
@@ -188,7 +194,6 @@
                     
                     buttonDesktop.classList.add(...activeMenuClass);
                     liMobile.classList.add("active");
-                    console.log("in", entry.target.dataset.itemSection, buttonDesktop);
                 }
             });
 
@@ -252,6 +257,30 @@
         mobileNav.querySelectorAll("li").forEach(l => {
             l.classList.remove("active");
         });
+    }
+
+    const sendMessage = async () => {
+        sendingMessage = true;
+            
+        try {
+            const api_send = `https://api.cavazzo.com.mx/notify`;
+
+            if (name != "" && email != "" && subjects.length > 0) {
+                const _subjects = subjects.toString();
+                const request = await fetch(api_send, {
+                    method: "POST",
+                    body: JSON.stringify({ name, email, interest: _subjects, message: message }),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+                const response = await request.json();
+            }
+        } catch (error) {
+            console.error(error);
+        }
+        
+        sendingMessage = false;
     }
 </script>
 
@@ -327,8 +356,12 @@
                 </div>
                 <div class="mt-6 md:mt-0 w-full">
                     <div class="flex justify-center items-center mx-auto">
-                        <svg class="mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                        <svg class="mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        <a class="cursor-pointer" href="https://www.linkedin.com/in/cavazzo" alt="Linkedin" target="_blank">
+                            <svg class="mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+                        <a class="cursor-pointer" href="https://github.com/cavazzo" alt="Github" target="_blank">
+                            <svg class="mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -384,7 +417,7 @@
                         <div class="w-full h-full px-5 pt-3 rounded-md space-y-3 bg-white bg-opacity-60 border border-white border-opacity-25 shadow-sm backdrop-filter backdrop-blur-sm" style="clip-path: polygon(0 0, 100% 90%, 100% 100%, 0% 100%);">
                             <div class="w-full h-full float-right bg-transparent" style="shape-outside: polygon(0 0, 100% 90%, 100% 0%);"></div>
                             <div class="font-extrabold text-3xl text-white">Radiance</div>
-                            <div class="block font-extrabold text-sm text-gray-800">Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum eligendi corrupti laborum dignissimos aperiam ut fugiat omnis, deserunt maiores facilis architecto doloremque nam minus at amet eos adipisci quam alias. Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor impedit architecto ducimus autem id nostrum necessitatibus nihil hic adipisci. Quas earum deserunt maiores suscipit vel, neque deleniti blanditiis ducimus veniam.</div>
+                            <div class="block font-extrabold text-sm text-gray-800">Trucks Monitoring system in real time, notifies alerts emited from trucks as SOS, off route, failures, etc. These alerts can be managed by users to do the properly follow with the operatorof the truck.</div>
                             <div class="font-bold text-sm text-violet-800 underline"><a href="https://demo.cavazzo.com.mx/monitoring" target="_blank">https://demo.cavazzo.com.mx/monitoring</a></div>
                             <div class="font-bold text-sm text-violet-800 underline"><a href="https://demo.cavazzo.com.mx/api-monitoring/swagger" target="_blank">https://demo.cavazzo.com.mx/api-monitoring/swagger</a></div>
                             <div class="flex flex-row w-full space-x-3 absolute">
@@ -431,7 +464,9 @@
                     <div class="font-bold text-white text-center lg:text-left text-opacity-80 mt-2 text-sm">Fill up the form and i will get back to you within 24 hours.</div>
                     <div class="flex flex-row w-full mt-10 text-sm lg:text-lg space-x-2">
                         <span class="text-violet-500 bg-white rounded-md py-0.5 px-2"><FontAwesomeIcon icon={faEnvelope} size="lg" /></span>
-                        <span class="text-white">jesus@cavazzo.com.mx</span>
+                        <span class="text-white">
+                            <a href="mailto:jesus@cavazzo.com.mx" alt="Contact email">jesus@cavazzo.com.mx</a>
+                        </span>
                     </div>
                     <div class="flex flex-row w-full mt-10 text-sm lg:text-lg space-x-2">
                         <span class="text-violet-500 bg-white rounded-md py-0.5 px-2"><FontAwesomeIcon icon={faLinkedin} size="lg" /></span>
@@ -450,11 +485,11 @@
             <div class="flex flex-col w-full md:w-7/12 rounded-r-md py-12 px-5 space-y-5">
                 <div class="flex flex-col md:flex-row gap-4 w-full">
                     <div class="relative z-0 mb-6 w-full md:w-1/2 group">
-                        <input type="email" name="floating_email" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-violet-600 peer" placeholder=" " required />
-                        <label for="floating_email" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-violet-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email address</label>
+                        <input bind:value={name} type="text" name="floating_name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-violet-600 peer" placeholder=" " required />
+                        <label for="floating_name" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-violet-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Firts Name</label>
                     </div>
                     <div class="relative z-0 mb-6 w-full md:w-1/2 group">
-                        <input type="email" name="floating_email" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-violet-600 peer" placeholder=" " required />
+                        <input bind:value={email} type="email" name="floating_email" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-violet-600 peer" placeholder=" " required />
                         <label for="floating_email" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-violet-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email address</label>
                     </div>
                 </div>
@@ -462,35 +497,41 @@
                     <div class="text-gray-600 font-bold text-base">Select the subjects of your interest</div>
                     <div class="flex flex-row flex-wrap w-full gap-5">
                         <div class="form-check">
-                            <input class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" value="" id="flexCheckDefault">
+                            <input bind:group={subjects} class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" value="Web Site">
                             <label class="form-check-label inline-block text-gray-800" for="flexCheckDefault">
                                 Web Site
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" value="" id="flexCheckDefault">
+                            <input bind:group={subjects} class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" value="Api Rest">
                             <label class="form-check-label inline-block text-gray-800" for="flexCheckDefault">
                                 Api Rest
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" value="" id="flexCheckDefault">
+                            <input bind:group={subjects} class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" value="Windows/Linux Service">
                             <label class="form-check-label inline-block text-gray-800" for="flexCheckDefault">
                                 Windows/Linux Service
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" value="" id="flexCheckDefault">
+                            <input bind:group={subjects} class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" value="Desktop Application">
                             <label class="form-check-label inline-block text-gray-800" for="flexCheckDefault">
                                 Desktop Application
                             </label>
                         </div>
                     </div>
                     <div class="w-full">
-                        <textarea id="message" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg resize-none border border-gray-300 outline-1 outline-violet-500 focus:ring-blue-500 focus:border-blue-500" placeholder="Write your message..."></textarea>
+                        <textarea bind:value={message} rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg resize-none border border-gray-300 outline-1 outline-violet-500 focus:ring-blue-500 focus:border-blue-500" placeholder="Write your message..."></textarea>
                     </div>
                     <div class="flex flex-row w-full h-full">
-                        <button type="button" class="w-full inline-block px-6 py-2.5 bg-violet-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-violet-700 hover:shadow-lg focus:bg-violet-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-violet-700 active:shadow-lg transition duration-150 ease-in-out">Send Message</button>
+                        <button on:click="{sendMessage}" type="button" disabled={sendingMessage} class="w-full inline-block px-6 py-2.5 bg-violet-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-violet-700 hover:shadow-lg focus:bg-violet-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-violet-700 active:shadow-lg transition duration-150 ease-in-out">
+                            {#if sendingMessage}
+                                <FontAwesomeIcon icon={faSpinner} spin={true} />
+                            {:else}
+                                Send Message
+                            {/if}
+                        </button>
                     </div>
                 </div>
             </div>
