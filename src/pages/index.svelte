@@ -263,7 +263,7 @@
         sendingMessage = true;
             
         try {
-            const api_send = `https://api.cavazzo.com.mx/notify`;
+            const api_send = `https://api.cavazzo.com.mx/api/contact/notify`;
 
             if (name != "" && email != "" && subjects.length > 0) {
                 const _subjects = subjects.toString();
