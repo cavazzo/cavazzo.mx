@@ -6,7 +6,11 @@ import image from "@astrojs/image";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), react(), image()],
+  integrations: [tailwind(), react(), image(), partytown({
+    config: {
+      forward: ["dataLayer.push"],
+    },
+  })],
   output: 'static',
   site: 'https://www.cavazzo.com.mx'
 });
