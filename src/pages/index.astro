@@ -1,0 +1,161 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.jsx";
+import PresentationCard from "../components/PresentationCard.astro";
+import Skill from "../components/Skill.astro";
+import RadianceProject from "../components/RadianceProject.jsx";
+import ContactForm from "../components/ContactForm.jsx";
+import sortArray from 'sort-array';
+
+type personalSkillType = {
+    name: string;
+}
+type personalSkill = {
+    id: string;
+    image_name: string;
+    level_of_experience: number;
+    name: string;
+    personal_skill_type: personalSkillType;
+    years_of_experience: number;
+}
+
+const SkillsCall = await fetch('https://api.cavazzo.com.mx/catalogue/personal-skills');
+const Skills: personalSkill[] = await SkillsCall.json();
+
+let SkillTypes: string[] = [];
+
+Skills.forEach(skill => {
+	const type = skill.personal_skill_type.name;
+
+	if (!SkillTypes.includes(type)) {
+		SkillTypes = [
+			...SkillTypes,
+			type
+		];
+	}
+});
+
+sortArray(SkillTypes, { 
+    order: "type",
+    customOrders: {
+        type: [ "Languages", "Frontend", "Backend" ]
+    }
+});
+---
+
+<Layout title="Cavazzo">
+	<Nav client:load />
+	<PresentationCard />
+	<div class="flex flex-col w-full h-full px-2 md:px-0" id="skills-section">
+        <div class="flex flex-row justify-center relative w-full md:w-10/12 mx-auto mt-5 md:mt-10">
+            <div class="flex absolute w-full h-10 -top-3 bg-transparent z-10 border-0 backdrop-filter backdrop-blur-sm"></div>
+            <div class="flex absolute w-full h-full" style="background: rgb(255,255,255); background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(209,250,229,1) 30%, rgba(237,233,254,1) 70%, rgba(255,255,255,0) 100%);"></div>
+            <div class="flex flex-col justify-center items-center w-full h-full space-y-8 py-8 z-10">
+                <div class="flex flex-col text-center items-center justify-center">
+                    <div class="text-2xl font-bold">
+                        Skills
+                    </div>
+                    <div class="text-sm text-gray-500 font-bold" id="ob-skills-section" data-item-section="Skills">
+                        More than 6 years of experience developing software in the labor market, here I list the technologies that I have used the most.
+                    </div>
+                </div>
+				{SkillTypes.map(skillType => (
+					<>
+						<div class="text-2xl mt-12 font-bold">
+							{skillType}
+						</div>
+						<div class="flex flex-wrap w-3/4 justify-around h-full">
+							{Skills.filter(skill => skill.personal_skill_type.name == skillType).map((skill, i) => (
+								<Skill
+									img={`/${skill.image_name}`}
+									name={skill.name}
+									yearsOfExperience={skill.years_of_experience}
+									levelOfExperience={skill.level_of_experience}
+									shadowColor={(i + 1) % 2 == 0 ? "shadow-violet-400/20" : "shadow-emerald-400/20"} 
+								/>
+							))}
+						</div>
+					</>
+				))}
+            </div>
+            <div class="flex absolute w-full h-10 -bottom-3 bg-transparent z-10 border-0 backdrop-filter backdrop-blur-sm"></div>
+        </div>
+    </div>
+    <RadianceProject client:visible />
+    <ContactForm client:visible />
+</Layout>
+
+<script>
+    (function () {
+        const cleanMenuActives = () => {
+            const activeMenuClass = ["text-emerald-500", "border-b-2", "border-emerald-500", "font-bold"];
+            const noActiveMenuClass = ["text-gray-600", "hover:text-emerald-500", "transition", "duration-300", "font-semibold"];
+            const desktopNav = document.getElementById("navbar-desktop");
+            const mobileNav = document.getElementById("navbar-mobile");
+
+            if (desktopNav && mobileNav) {
+                desktopNav.querySelectorAll("button").forEach(bu => {
+                    bu.classList.remove(...activeMenuClass);
+                    bu.classList.remove(...noActiveMenuClass);
+                });
+                mobileNav.querySelectorAll("li").forEach(l => {
+                    l.classList.remove("active");
+                });
+            }
+        }
+
+        const menuObserver = new IntersectionObserver((entries) => {
+            const activeMenuClass = ["text-emerald-500", "border-b-2", "border-emerald-500", "font-bold"];
+            const desktopNav = document.getElementById("navbar-desktop");
+            const mobileNav = document.getElementById("navbar-mobile");
+
+            if (desktopNav && mobileNav) {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) {
+                        // out
+                    }
+                    else {
+                        // in
+                        cleanMenuActives();
+                        const target = entry.target as HTMLElement;
+                        const section = target.dataset.itemSection;
+                        const buttonDesktop = desktopNav.querySelector(`button[data-section='${section}']`);
+                        const liMobile = mobileNav.querySelector(`li[data-section='${section}']`);
+                        
+                        if (buttonDesktop && liMobile) {
+                            buttonDesktop.classList.add(...activeMenuClass);
+                            liMobile.classList.add("active");
+                        }
+                    }
+                });
+            }
+        }, {
+            threshold: 1
+        });
+
+        menuObserver.observe(document.getElementById("home-section")!);
+        menuObserver.observe(document.getElementById("ob-skills-section")!);
+        menuObserver.observe(document.getElementById("projects-section")!);
+        menuObserver.observe(document.getElementById("contact-section")!);
+    })();
+</script>
+
+<style is:inline>
+	.gradient-bg {
+        fill: url(#header-shape-gradient) #fff;
+    }
+
+	#header-shape-gradient {
+        --color-stop: #89d4cf;
+        --color-bot: #6e45e1;
+    }
+
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd
+    }
+
+    .form-check-input:checked[type=checkbox] {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e")
+    }
+</style>
